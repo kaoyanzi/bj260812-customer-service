@@ -1,0 +1,35 @@
+graph TD
+    U(["用户发送消息"]) --> API["API 路由层"]
+    API --> SVC["DialogueService<br/>加载状态 -> 调用引擎 -> 保存状态"]
+    SVC --> PREP["准备 Session 与当前 Turn"]
+    PREP --> TYPE{"消息类型?"}
+    TYPE -->|TEXT| PLAN["TurnPlanner 生成本轮计划"]
+    PLAN --> VALIDATE{"TurnPlanValidator<br/>计划是否有效?"}
+    VALIDATE -->|否| T_CLARIFY["ClarifyResponder<br/>澄清计划"]
+    VALIDATE -->|是| ROUTE{"进入哪条轨道?"}
+    ROUTE -->|task| T_TASK["TaskHandler<br/>执行任务计划"]
+    ROUTE -->|knowledge| KNOW["暂停活动任务（如有）<br/>KnowledgeHandler"]
+    ROUTE -->|chitchat| CHAT["暂停活动任务（如有）<br/>ChitchatHandler"]
+    TYPE -->|OBJECT| OBJ["记录用户选择的订单或商品"]
+    OBJ --> FILL{"能否补充当前任务所需信息?"}
+    FILL -->|是| O_TASK["TaskHandler<br/>执行补槽命令"]
+    FILL -->|否| O_CLARIFY["ClarifyResponder<br/>询问对象用途"]
+    T_TASK --> COMMIT["提交 Turn"]
+    KNOW --> COMMIT
+    CHAT --> COMMIT
+    T_CLARIFY --> COMMIT
+    O_TASK --> COMMIT
+    O_CLARIFY --> COMMIT
+    COMMIT --> SAVE["保存 DialogueState"]
+    SAVE --> R(["返回回复"])
+
+    %% 配色定义，和上一个图保持一致，适配 Typora 0.9.96 Mermaid v8.5.2
+    classDef layer1 fill:#e1f5fe,stroke:#0288d1
+    classDef layer2 fill:#e8f5e9,stroke:#2e7d32
+    classDef layer3 fill:#fff3e0,stroke:#ef6c00
+    classDef layer4 fill:#f3e5f5,stroke:#7b1fa2
+
+    class U,R layer1
+    class API,SVC,PREP,PLAN,VALIDATE layer2
+    class TYPE,ROUTE,T_TASK,KNOW,CHAT,T_CLARIFY,OBJ,FILL,O_TASK,O_CLARIFY layer3
+    class COMMIT,SAVE layer4
