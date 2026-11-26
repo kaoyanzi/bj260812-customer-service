@@ -1,0 +1,38 @@
+classDiagram
+    direction LR
+    class ChatObject {
+        +type: str
+        +id: str
+        +title: str | None
+        +attributes: dict
+    }
+    class ChatRequest {
+        +sender_id: str
+        +message_id: str | None
+        +text: str | None
+        +object: ChatObject | None
+    }
+    class ChatBotMessage {
+        +text: str | None
+        +object: ChatObject | None
+    }
+    class ChatResponse {
+        +sender_id: str
+        +message_id: str
+        +messages: list~ChatBotMessage~
+    }
+    class HistoryMessage {
+        +role: str
+        +text: str | None
+        +object: ChatObject | None
+    }
+    class HistoryResponse {
+        +sender_id: str
+        +messages: list~HistoryMessage~
+    }
+
+    ChatRequest --> ChatObject : object
+    ChatBotMessage --> ChatObject : object
+    HistoryMessage --> ChatObject : object
+    ChatResponse --> ChatBotMessage : messages
+    HistoryResponse --> HistoryMessage : messages

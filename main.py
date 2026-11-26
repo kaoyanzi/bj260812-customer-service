@@ -1,16 +1,18 @@
-# This is a sample Python script.
+#1.生命fastapi的生命周期
+import uvicorn
+from fastapi import FastAPI
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from atguigu.conf.config import settings
+from atguigu.web.chat_router import chat_router
 
+#2.创建fastapi示例
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+app = FastAPI()
+#3.引入路由
+app.include_router(chat_router)
 
+def main():
+    uvicorn.run("main:app", host="127.0.0.1", port=settings.app_port,reload=True)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant API as API
+    participant Service as DialogueService
+    participant Repository as DialogueStateRepository
+    participant Engine as DialogueEngine
+
+    API->>Service: process_message(user_message)
+    Service->>Repository: load_state(sender_id)
+    Repository-->>Service: DialogueState
+    Service->>Engine: process_message(state, user_message)
+    Engine-->>Service: ProcessResult
+    Service->>Repository: save_state(state)
+    Repository-->>Service: 保存完成
+    Service-->>API: ProcessResult

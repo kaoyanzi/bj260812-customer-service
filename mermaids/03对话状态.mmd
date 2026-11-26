@@ -1,0 +1,47 @@
+classDiagram
+    direction TB
+
+    class DialogueState {
+        +sender_id: str
+        +shared_state: SharedState
+        +task_state: TaskState
+    }
+    class SharedState {
+        +focused_object: FocusedObject | None
+        +sessions: list~Session~
+    }
+    class FocusedObject {
+        +type: str
+        +id: str
+        +title: str | None
+        +attributes: dict
+    }
+    class Session {
+        +session_id: str
+        +started_at: float
+        +last_activity_at: float
+        +closed_at: float | None
+        +turns: list~Turn~
+    }
+    class Turn {
+        +turn_id: str
+        +user_message: UserMessage
+        +bot_messages: list~BotMessage~
+    }
+    class TaskState {
+        +active_task: TaskInstance | None
+        +paused: list~TaskInstance~
+    }
+    class TaskInstance {
+        +flow_id: str
+        +step_id: str | None
+        +slots: dict
+        +task_id: str
+    }
+
+    DialogueState --> SharedState : shared
+    DialogueState --> TaskState : tasks
+    SharedState --> FocusedObject : focused_object
+    SharedState --> Session : sessions
+    Session --> Turn : turns
+    TaskState --> TaskInstance : active / paused
