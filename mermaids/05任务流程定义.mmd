@@ -1,0 +1,100 @@
+classDiagram
+    direction TB
+    %% Enums
+    class FlowStepType {
+        <<enumeration>>
+        START = "start"
+        ACTION = "action"
+        RESPONSE = "response"
+        COLLECT = "collect"
+        END = "end"
+    }
+    class ResponseMode {
+        <<enumeration>>
+        STATIC = "static"
+        REPHRASE = "rephrase"
+    }
+    %% Base Link & Subclasses
+    class FlowStepLink {
+        +target: str
+    }
+    class StaticLink {
+    }
+    class ConditionalLink {
+        +condition: str
+    }
+    class FallbackLink {
+    }
+    %% Slot Validation
+    class SlotValidation {
+        +condition: str | None
+        +failure_template: ResponseTemplate | None
+    }
+    %% FlowSlot 用 note 微调布局，移到右侧
+    class FlowSlot {
+        +name: str
+        +type: str
+        +label: str
+        +description: str
+    }
+
+
+    %% ResponseTemplate 移除 from_dict 方法
+    class ResponseTemplate {
+        +mode: ResponseMode
+        +text: str | None
+        +prompt: str | None
+    }
+    %% FlowStep Base & Subclasses
+    class FlowStep {
+        +id: str
+        +type: FlowStepType
+        +next: list~FlowStepLink~
+    }
+    class StartFlowStep {
+    }
+    class ActionFlowStep {
+        +action: str
+    }
+    class ResponseFlowStep {
+        +template: ResponseTemplate
+    }
+    class CollectSlotStep {
+        +slot_name: str
+        +template: ResponseTemplate
+        +validation: SlotValidation | None
+    }
+    class EndFlowStep {
+    }
+    %% Flow & Catalog
+    class Flow {
+        +id: str
+        +description: str
+        +steps: list~FlowStep~
+        +slots: list~FlowSlot~
+        +name: str | None
+    }
+    class FlowCatalog {
+        +flows: dict[str, Flow]
+        +slots: dict[str, FlowSlot]
+    }
+
+    %% Inheritance
+    FlowStepLink <|-- StaticLink
+    FlowStepLink <|-- ConditionalLink
+    FlowStepLink <|-- FallbackLink
+    FlowStep <|-- StartFlowStep
+    FlowStep <|-- ActionFlowStep
+    FlowStep <|-- ResponseFlowStep
+    FlowStep <|-- CollectSlotStep
+    FlowStep <|-- EndFlowStep
+
+    %% Associations
+    Flow --> FlowStep : steps
+    Flow --> FlowSlot : slots
+    FlowStep --> FlowStepLink : next
+    CollectSlotStep --> SlotValidation : validation
+    SlotValidation --> ResponseTemplate : failure_template
+    ResponseFlowStep --> ResponseTemplate : template
+    FlowCatalog --> Flow : flows
+    FlowCatalog --> FlowSlot : slots
