@@ -25,7 +25,7 @@ class DialogueService:
         state:DialogueState = await self.dialogue_state_record_repository.load_state(user_message)
 
         #2.调用对话引擎(修改对话状态)得到本轮次的客服回复
-        process_result:ProcessResult = await self.dialogue_engine.process_result(state,user_message)
+        process_result:ProcessResult = await self.dialogue_engine.process_message(state,user_message)
 
         #3,保存/更新对话状态
         await self.dialogue_state_record_repository.save_state(state)

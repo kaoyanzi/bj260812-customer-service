@@ -7,6 +7,6 @@ class DialogueEngine:
     def __init__(self):
         pass
 
-    async def process_result(self, state:DialogueState, user_message:UserMessage)->ProcessResult:
+    async def process_message(self, state:DialogueState, user_message:UserMessage)->ProcessResult:
 
         pass
